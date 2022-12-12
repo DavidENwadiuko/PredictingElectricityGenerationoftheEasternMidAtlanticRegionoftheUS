@@ -48,8 +48,8 @@ colDf
 fig, ax = plt.subplots()
 ax.plot(col)
 ax.grid()
-ax.xlabel("Years (YYYY-MM-DD)")
-ax.ylabel("Electricity Generated (Megawatthours)")
+ax.set_xlabel("Years (YYYY-MM-DD)")
+ax.set_ylabel("Electricity Generated (Megawatthours)")
 ax.title("The Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
 st.pyplot(fig)
 
