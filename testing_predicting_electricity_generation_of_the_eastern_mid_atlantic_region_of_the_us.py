@@ -39,11 +39,17 @@ colDf.isnull().sum()
 colDf = colDf.groupby('period')['value'].sum().reset_index()
 
 colDf = colDf.set_index('period')
-colDf.index
+#colDf.index
 
 col = colDf['value'].resample('MS').mean()
 
-colDf
+#colDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation viaCoal in the Eastern Region of The U.S. Mid-Atlantic .**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(col)
@@ -73,11 +79,6 @@ for param in pdq:
         except:
             continue
 
-"""
-
->**As you can see, the above output tell us that SARIMAX(0, 0, 1)x(1, 1, 1, 12) yields the lowest AIC value of 628.65. This mean that we must consider this option to be the most optimal one available.**
-
-"""
 
 mod = sm.tsa.statespace.SARIMAX(col,
                                 order=(1, 0, 1),
@@ -87,11 +88,12 @@ mod = sm.tsa.statespace.SARIMAX(col,
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = col.plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -101,7 +103,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Coal Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 col_forecasted = pred.predicted_mean
 col_truth = col['2022-01-01':]
