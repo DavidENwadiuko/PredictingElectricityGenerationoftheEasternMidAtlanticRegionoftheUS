@@ -26,44 +26,7 @@ if st.button('Refresh'):
 else:
     st.write('Ready to Reload')
 
-def get_energy_data():
-    sunUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=SUN&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
-    r = requests.get(sunUrl)
-    json_data = json.loads(r.text)
-    return json_data
 
-# Function to plot energy consumption data on a graph
-def plot_energy_data(data):
-
-    sunDf = pd.DataFrame(data.get('response').get('data'))
-    sunDf['period'] = pd.to_datetime(sunDf['period'])
-
-
-    x = sunDf['period']
-    y = sunDf['value']
-
-    # Create a bar chart with the energy consumption data
-    fig, ax = plt.subplots()
-    ax.plot(x, y)
-    st.pyplot(fig)
- 
-# Create a dropdown menu for selecting time frame (days, weeks, months, years)
-time_frame = st.selectbox('Select time frame:', ['days', 'weeks', 'months', 'years'])
-
-# Get energy consumption data for the selected time frame
-data = get_energy_data()
-
-# Display current energy consumption data
-st.write('Current energy consumption:')
-
-
-# Display past energy consumption data
-st.write('Past energy consumption:')
-
-
-# Plot energy consumption data on a graph
-st.write('Energy consumption over time:')
-plot_energy_data(data)
 
 colUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=COL&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(colUrl)
