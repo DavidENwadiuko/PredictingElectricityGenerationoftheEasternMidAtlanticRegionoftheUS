@@ -21,6 +21,11 @@ import json
 import requests
 import statsmodels.api as sm
 
+if st.button('Refresh'):
+    st.experimental_rerun()
+else:
+    st.write('Ready to Reload')
+
 colUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=COL&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(colUrl)
 json_data = json.loads(r.text)
@@ -47,7 +52,7 @@ col = colDf['value'].resample('MS').mean()
 
 """
 
->**Past Data, Present Data, and Prediction of the Energy Generation viaCoal in the Eastern Region of The U.S. Mid-Atlantic .**
+>**Past Data, Present Data, and Prediction of the Energy Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic .**
 
 """
 
@@ -114,6 +119,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = col.plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -123,7 +129,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 nucUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=NUC&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(nucUrl)
@@ -143,11 +149,17 @@ nucDf.isnull().sum()
 nucDf = nucDf.groupby('period')['value'].sum().reset_index()
 
 nucDf = nucDf.set_index('period')
-nucDf.index
+#nucDf.index
 
 nuc = nucDf['value'].resample('MS').mean()
 
-nucDf
+#nucDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Nuclear in the Eastern Region of The U.S. Mid-Atlantic .**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(nuc)
@@ -158,8 +170,8 @@ plt.title("The Electricity Generation via Nuclear in the Eastern Region of The U
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(nuc['2018-10-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -184,11 +196,11 @@ mod = sm.tsa.statespace.SARIMAX(nuc['2018-10-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = nuc['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -198,7 +210,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Nuclear Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 nuc_forecasted = pred.predicted_mean
 nuc_truth = nuc['2022-01-01':]
@@ -209,6 +221,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = nuc.plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -218,7 +231,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Nuclear Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 watUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=WAT&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(watUrl)
@@ -238,11 +251,17 @@ watDf.isnull().sum()
 watDf = watDf.groupby('period')['value'].sum().reset_index()
 
 watDf = watDf.set_index('period')
-watDf.index
+#watDf.index
 
 wat = watDf['value'].resample('MS').mean()
 
-watDf
+#watDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Water in the Eastern Region of The U.S. Mid-Atlantic .**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(wat)
@@ -253,8 +272,8 @@ plt.title("The Electricity Generation via Water in the Eastern Region of The U.S
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(wat['2018-10-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -280,11 +299,11 @@ mod = sm.tsa.statespace.SARIMAX(wat['2018-10-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = wat['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -294,7 +313,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricty Generation via Water in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 wat_forecasted = pred.predicted_mean
 wat_truth = wat['2022-01-01':]
@@ -305,6 +324,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = wat['2018':].plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -314,7 +334,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Nuclear Generation via Water in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 ngUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=NG&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(ngUrl)
@@ -334,11 +354,17 @@ ngDf.isnull().sum()
 ngDf = ngDf.groupby('period')['value'].sum().reset_index()
 
 ngDf = ngDf.set_index('period')
-ngDf.index
+#ngDf.index
 
 ng = ngDf['value'].resample('MS').mean()
 
-ngDf
+#ngDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(ng)
@@ -349,8 +375,8 @@ plt.title("The Electricity Generation via Natural Gas in the Eastern Region of T
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(ng['2018-09-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -376,11 +402,12 @@ mod = sm.tsa.statespace.SARIMAX(ng['2018-09-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = ng['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -390,7 +417,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricity Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 ng_forecasted = pred.predicted_mean
 ng_truth = ng['2022-01-01':]
@@ -401,6 +428,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = ng['2018':].plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -410,7 +438,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electrcity Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 oilUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=OIL&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(oilUrl)
@@ -430,11 +458,17 @@ oilDf.isnull().sum()
 oilDf = oilDf.groupby('period')['value'].sum().reset_index()
 
 oilDf = oilDf.set_index('period')
-oilDf.index
+#oilDf.index
 
 oil = oilDf['value'].resample('MS').mean()
 
-oilDf
+#oilDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(oil)
@@ -445,8 +479,8 @@ plt.title("The Electricity Generation via Oil in the Eastern Region of The U.S. 
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(oil['2018-09-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -472,11 +506,11 @@ mod = sm.tsa.statespace.SARIMAX(oil['2018-09-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = oil['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -486,7 +520,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricity Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 oil_forecasted = pred.predicted_mean
 oil_truth = oil['2022-01-01':]
@@ -497,6 +531,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = oil['2018':].plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -506,7 +541,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electrcity Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 sunUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=SUN&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(sunUrl)
@@ -526,11 +561,17 @@ sunDf.isnull().sum()
 sunDf = sunDf.groupby('period')['value'].sum().reset_index()
 
 sunDf = sunDf.set_index('period')
-sunDf.index
+#sunDf.index
 
 sun = sunDf['value'].resample('MS').mean()
 
-sunDf
+#sunDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Solar in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(sun)
@@ -541,8 +582,8 @@ plt.title("The Electricity Generation via Solar in the Eastern Region of The U.S
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(sun['2018-09-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -568,11 +609,11 @@ mod = sm.tsa.statespace.SARIMAX(sun['2018-09-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = sun['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -582,7 +623,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricity Generation via Sun in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 sun_forecasted = pred.predicted_mean
 sun_truth = sun['2022-01-01':]
@@ -593,6 +634,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = sun.plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -602,7 +644,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electrcity Generation via Solar in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 wndUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=WND&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(wndUrl)
@@ -622,11 +664,17 @@ wndDf.isnull().sum()
 wndDf = wndDf.groupby('period')['value'].sum().reset_index()
 
 wndDf = wndDf.set_index('period')
-wndDf.index
+#wndDf.index
 
 wnd = wndDf['value'].resample('MS').mean()
 
-wndDf
+#wndDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(wnd)
@@ -637,8 +685,8 @@ plt.title("The Electricity Generation via Wind in the Eastern Region of The U.S.
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(wnd['2018-09-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -664,11 +712,11 @@ mod = sm.tsa.statespace.SARIMAX(wnd['2018-09-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = wnd['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -678,7 +726,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricity Generation via Wind in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 wnd_forecasted = pred.predicted_mean
 wnd_truth = wnd['2022-01-01':]
@@ -689,6 +737,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = wnd.plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -698,7 +747,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electrcity Generation via Wind in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 othUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=OTH&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(othUrl)
@@ -718,11 +767,17 @@ othDf.isnull().sum()
 othDf = othDf.groupby('period')['value'].sum().reset_index()
 
 othDf = othDf.set_index('period')
-othDf.index
+#othDf.index
 
 oth = othDf['value'].resample('MS').mean()
 
-othDf
+#othDf
+
+"""
+
+>**Past Data, Present Data, and Prediction of the Energy Generation via Other Energy Sources in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(oth)
@@ -733,8 +788,8 @@ plt.title("The Electricity Generation via Other Energy Sources in the Eastern Re
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(oth['2018-09-01':], model='additive')
-decomposition.plot()
-plt.show()
+
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
@@ -760,11 +815,11 @@ mod = sm.tsa.statespace.SARIMAX(oth['2018-09-01':],
 results = mod.fit()
 print(results.summary().tables[1])
 
-results.plot_diagnostics()
-plt.show()
+st.pyplot(results.plot_diagnostics())
 
 pred = results.get_prediction(start=pd.to_datetime('2022-01-01'), dynamic=False)
 pred_ci = pred.conf_int()
+fig, ax = plt.subplots()
 ax = oth['2018':].plot(label='observed')
 pred.predicted_mean.plot(ax=ax, label='One-step ahead Forecast', alpha=.7, figsize=(14, 7))
 ax.fill_between(pred_ci.index,
@@ -774,7 +829,7 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("Accuracy Check for the Prediction for the Electricity Generation via Other Energy Sources in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
 
 oth_forecasted = pred.predicted_mean
 oth_truth = oth['2022-01-01':]
@@ -785,6 +840,7 @@ print('The Root Mean Squared Error of our forecasts is {}'.format(round(np.sqrt(
 
 pred_uc = results.get_forecast(steps=100)
 pred_ci = pred_uc.conf_int()
+fig, ax = plt.subplots()
 ax = oth.plot(label='observed', figsize=(20, 10))
 pred_uc.predicted_mean.plot(ax=ax, label='Forecast')
 ax.fill_between(pred_ci.index,
@@ -794,7 +850,13 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
 plt.title("The Prediction for the Electrcity Generation via Other Enegry Sources in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
-plt.show()
+st.pyplot(fig)
+
+"""
+
+>**Past and Present Data of the Energy Generation in the Eastern Region of The U.S. Mid-Atlantic**
+
+"""
 
 fig, ax = plt.subplots()
 ax.plot(col, label = 'Coal')
