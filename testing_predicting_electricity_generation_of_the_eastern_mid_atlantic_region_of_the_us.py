@@ -54,8 +54,7 @@ plt.title("The Electricity Generation via Coal in the Eastern Region of The U.S.
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(col, model='additive')
-decomposition.plot()
-plt.show()
+st.pyplot(decomposition.plot())
 
 p = d = q = range(0, 2)
 pdq = list(itertools.product(p, d, q))
