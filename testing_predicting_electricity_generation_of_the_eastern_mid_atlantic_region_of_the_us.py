@@ -45,13 +45,14 @@ col = colDf['value'].resample('MS').mean()
 
 colDf
 
-plt.rcParams["figure.figsize"] = (20,10)
-plt.plot(col)
-plt.grid()
-plt.xlabel("Years (YYYY-MM-DD)")
-plt.ylabel("Electricity Generated (Megawatthours)")
-plt.title("The Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
-plt.show()
+fig, ax = plt.subplots()
+ax.rcParams["figure.figsize"] = (20,10)
+ax.plot(col)
+ax.grid()
+ax.xlabel("Years (YYYY-MM-DD)")
+ax.ylabel("Electricity Generated (Megawatthours)")
+ax.title("The Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
+st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(col, model='additive')
 decomposition.plot()
