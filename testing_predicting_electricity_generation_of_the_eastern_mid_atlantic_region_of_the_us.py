@@ -26,6 +26,45 @@ if st.button('Refresh'):
 else:
     st.write('Ready to Reload')
 
+def get_energy_data():
+    sunUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=SUN&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
+    r = requests.get(sunUrl)
+    json_data = json.loads(r.text)
+    return json_data
+
+# Function to plot energy consumption data on a graph
+def plot_energy_data(data):
+
+    sunDf = pd.DataFrame(data.get('response').get('data'))
+    sunDf['period'] = pd.to_datetime(sunDf['period'])
+
+
+    x = sunDf['period']
+    y = sunDf['value']
+
+    # Create a bar chart with the energy consumption data
+    fig, ax = plt.subplots()
+    ax.plot(x, y)
+    st.pyplot(fig)
+ 
+# Create a dropdown menu for selecting time frame (days, weeks, months, years)
+time_frame = st.selectbox('Select time frame:', ['days', 'weeks', 'months', 'years'])
+
+# Get energy consumption data for the selected time frame
+data = get_energy_data()
+
+# Display current energy consumption data
+st.write('Current energy consumption:')
+
+
+# Display past energy consumption data
+st.write('Past energy consumption:')
+
+
+# Plot energy consumption data on a graph
+st.write('Energy consumption over time:')
+plot_energy_data(data)
+
 colUrl = 'https://api.eia.gov/v2/electricity/rto/daily-fuel-type-data/data/?api_key=klobKyhl5dK7WfbXBlMzFkpf3tD0TYakCzvXgsQ7&frequency=daily&data[0]=value&facets[fueltype][]=COL&facets[respondent][]=MIDA&facets[timezone][]=Eastern&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=5000'
 r = requests.get(colUrl)
 json_data = json.loads(r.text)
@@ -106,7 +145,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.2)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("Accuracy Check for the Prediction for the Coal Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("Accuracy Check for the Prediction for the Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -208,7 +247,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.2)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("Accuracy Check for the Prediction for the Nuclear Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("Accuracy Check for the Prediction for the Electricity Generation via Nuclear in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -229,7 +268,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.25)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("The Prediction for the Nuclear Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("The Prediction for the Electricity Generation via Nuclear in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -332,7 +371,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.25)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("The Prediction for the Nuclear Generation via Water in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("The Prediction for the Electricty Generation via Water in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -466,7 +505,7 @@ oil = oilDf['value'].resample('MS').mean()
 
 """
 
->**Past Data, Present Data, and Prediction of the Energy Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic**
+>**Past Data, Present Data, and Prediction of the Energy Generation via Petroleum in the Eastern Region of The U.S. Mid-Atlantic**
 
 """
 
@@ -475,7 +514,7 @@ ax.plot(oil)
 ax.grid()
 ax.set_xlabel("Years (YYYY-MM-DD)")
 ax.set_ylabel("Electricity Generated (Megawatthours)")
-plt.title("The Electricity Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("The Electricity Generation via Petroleum in the Eastern Region of The U.S. Mid-Atlantic")
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(oil['2018-09-01':], model='additive')
@@ -518,7 +557,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.2)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("Accuracy Check for the Prediction for the Electricity Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("Accuracy Check for the Prediction for the Electricity Generation via Petroleum in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -539,7 +578,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.25)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("The Prediction for the Electrcity Generation via Natural Gas in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("The Prediction for the Electrcity Generation via Petroleum in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -548,7 +587,7 @@ r = requests.get(sunUrl)
 json_data = json.loads(r.text)
 
 if r.status_code == 200:
-    print('The Electricity Generation via Petroleum in the Eastern Region of The U.S. Mid-Atlantic:')
+    print('The Electricity Generation via Solar in the Eastern Region of The U.S. Mid-Atlantic:')
 else:
     print('Error')
 
@@ -621,7 +660,7 @@ ax.fill_between(pred_ci.index,
                 pred_ci.iloc[:, 1], color='k', alpha=.2)
 ax.set_xlabel('Date')
 ax.set_ylabel('Electricity Generated (Megawatthours)')
-plt.title("Accuracy Check for the Prediction for the Electricity Generation via Sun in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("Accuracy Check for the Prediction for the Electricity Generation via Solar in the Eastern Region of The U.S. Mid-Atlantic")
 plt.legend()
 st.pyplot(fig)
 
@@ -672,7 +711,7 @@ wnd = wndDf['value'].resample('MS').mean()
 
 """
 
->**Past Data, Present Data, and Prediction of the Energy Generation via Oil in the Eastern Region of The U.S. Mid-Atlantic**
+>**Past Data, Present Data, and Prediction of the Energy Generation via Wind in the Eastern Region of The U.S. Mid-Atlantic**
 
 """
 
