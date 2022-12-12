@@ -50,7 +50,7 @@ ax.plot(col)
 ax.grid()
 ax.set_xlabel("Years (YYYY-MM-DD)")
 ax.set_ylabel("Electricity Generated (Megawatthours)")
-ax.title("The Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
+plt.title("The Electricity Generation via Coal in the Eastern Region of The U.S. Mid-Atlantic")
 st.pyplot(fig)
 
 decomposition = sm.tsa.seasonal_decompose(col, model='additive')
