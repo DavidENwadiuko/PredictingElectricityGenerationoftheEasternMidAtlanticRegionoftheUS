@@ -46,7 +46,6 @@ col = colDf['value'].resample('MS').mean()
 colDf
 
 fig, ax = plt.subplots()
-ax.rcParams["figure.figsize"] = (20,10)
 ax.plot(col)
 ax.grid()
 ax.xlabel("Years (YYYY-MM-DD)")
